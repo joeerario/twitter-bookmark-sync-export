@@ -55,7 +55,7 @@ export const config: AppConfig = {
   // LLM configuration
   llm: {
     provider: 'anthropic',
-    model: 'claude-sonnet-4-5-20250929',
+    model: 'claude-opus-4-5-20251101',
     maxTokens: 10024,
     timeout: 90_000,
     retries: 3,
