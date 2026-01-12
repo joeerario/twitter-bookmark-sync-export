@@ -23,6 +23,8 @@ repomix-output.xml
 
 # Temporary/planning files
 ZZZ*.md
+OAUTHREPORT.md
+PLAN-AUTH-PROVIDER.md
 
 # Editor and IDE
 .idea/

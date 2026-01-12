@@ -8,7 +8,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import type { BetaBase64ImageSource, BetaContentBlockParam } from '@anthropic-ai/sdk/resources/beta';
 import { betaJSONSchemaOutputFormat } from '@anthropic-ai/sdk/helpers/beta/json-schema';
 import { config } from './config.js';
-import { env } from './env.js';
+import { getAuthProvider } from './auth/index.js';
 import type {
   Categorization,
   Category,
@@ -25,6 +25,7 @@ import { safeFetchBinary } from './utils/safe-fetch.js';
 
 // Initialize Anthropic client lazily
 let anthropicClient: Anthropic | null = null;
+let anthropicApiKey: string | null = null;
 
 const MAX_IMAGE_BYTES = 20 * 1024 * 1024;
 const MAX_IMAGES = 12;
@@ -33,12 +34,15 @@ type ImageMediaType = BetaBase64ImageSource['media_type'];
 
 const SUPPORTED_IMAGE_TYPES = new Set<ImageMediaType>(['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
 
-export function getClient(): Anthropic {
-  if (!anthropicClient) {
-    if (!env.ANTHROPIC_API_KEY) {
-      throw new Error('ANTHROPIC_API_KEY environment variable is required');
-    }
-    anthropicClient = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
+export async function getClient(): Promise<Anthropic> {
+  const provider = getAuthProvider();
+  const key = await provider.getApiKey();
+
+  if (!anthropicClient || key !== anthropicApiKey) {
+    // OAuth tokens (sk-ant-oat*) use authToken, API keys (sk-ant-api*) use apiKey
+    const isOAuthToken = key.startsWith('sk-ant-oat');
+    anthropicClient = isOAuthToken ? new Anthropic({ authToken: key }) : new Anthropic({ apiKey: key });
+    anthropicApiKey = key;
   }
   return anthropicClient;
 }
@@ -600,7 +604,6 @@ export async function categorizeBookmark(
   // Build narrative context if narratives provided
   const narrativeContext = existingNarratives ? buildNarrativeContext(existingNarratives) : undefined;
 
-  const client = getClient();
   const prompt = buildPrompt(bookmark, narrativeContext);
   const imageBlocks = await buildImageBlocks(bookmark);
   if (bookmark.media && bookmark.media.length > 0 && imageBlocks.length === 0) {
@@ -610,6 +613,7 @@ export async function categorizeBookmark(
   let lastError: Error | null = null;
 
   for (let attempt = 1; attempt <= config.llm.retries; attempt++) {
+    const client = await getClient();
     try {
       // Create AbortController for timeout
       const controller = new AbortController();

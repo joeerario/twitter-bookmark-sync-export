@@ -597,7 +597,7 @@ async function runRefreshSummaries(options: RefreshOptions): Promise<void> {
   // Import shared LLM config and client (R5.3)
   const { getClient } = await import('./categorizer.js');
   const { config } = await import('./config.js');
-  const client = getClient();
+  const client = await getClient();
 
   console.log('\n=== Refreshing Narrative Summaries ===');
   if (options.dryRun) {
