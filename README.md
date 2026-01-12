@@ -1,97 +1,95 @@
 # Twitter Bookmark Sync & Export
 
-Automatically sync your Twitter/X bookmarks, categorize them with AI, and export to Obsidian as beautifully formatted notes.
+Sync your Twitter/X bookmarks automatically. AI categorizes them. Export to Obsidian as rich markdown notes.
 
 ## Features
 
-- **Automatic Sync** - Polls Twitter for new bookmarks every 5 minutes
-- **AI Categorization** - Claude analyzes each bookmark and assigns categories, tags, and summaries
-- **Thread Awareness** - Fetches full thread context, parent tweets, and top replies
-- **Article Extraction** - Pulls content from linked articles, YouTube transcripts, and embedded tweets
-- **Obsidian Export** - Generates rich markdown notes with frontmatter, callouts, and Dataview compatibility
-- **Narrative Tracking** - Groups related bookmarks into evolving topics/themes
-- **Multi-Account** - Support for multiple Twitter accounts
+- **Auto-sync** – Polls Twitter every 5 minutes for new bookmarks
+- **AI categorization** – Claude analyzes and sorts into try/review/knowledge/life/skip
+- **Thread-aware** – Fetches parent tweets, replies, quotes, full context
+- **Content extraction** – Pulls articles, YouTube transcripts, linked tweets
+- **Obsidian export** – Rich markdown with frontmatter, callouts, Dataview support
+- **Narrative tracking** – Groups related bookmarks into evolving topics
+- **Multi-account** – Sync bookmarks from multiple Twitter accounts
 
-## How It Works
+## How it works
 
-```
-Twitter Bookmarks → Fetch & Enrich → AI Categorize → Export to Obsidian
-                         ↓
-              • Thread context
-              • Article content
-              • YouTube transcripts
-              • Linked tweets
-```
+| Step | What happens |
+|------|--------------|
+| **Fetch** | New bookmarks pulled from Twitter API |
+| **Enrich** | Thread context, articles, transcripts extracted |
+| **Categorize** | Claude analyzes and assigns category, tags, summary |
+| **Export** | Markdown notes created in Obsidian vault |
 
-Bookmarks are sorted into categories:
-| Category | Folder | Description |
-|----------|--------|-------------|
-| `try` | Tools/ | Tools, libraries, apps to try |
-| `review` | Read/ | Articles and content to read |
-| `knowledge` | Insights/ | Reference material and insights |
-| `life` | Life/ | Personal, non-tech content |
-| `skip` | — | Low-value, filtered out |
+Categories:
 
-## Quick Start
+| Category | Obsidian Folder | What goes here |
+|----------|-----------------|----------------|
+| `try` | `Tools/` | Tools, libraries, apps to try |
+| `review` | `Read/` | Articles and content to read later |
+| `knowledge` | `Insights/` | Reference material, insights |
+| `life` | `Life/` | Personal, non-tech content |
+| `skip` | — | Filtered out |
 
-### Prerequisites
+## Install
 
-- Node.js 22+
-- [Anthropic API key](https://console.anthropic.com/)
-- Twitter/X account cookies (`auth_token`, `ct0`)
-
-### Installation
+Requires **Node.js 22+**, an [Anthropic API key](https://console.anthropic.com/), and Twitter cookies.
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/joeerario/twitter-bookmark-sync-export.git
 cd twitter-bookmark-sync-export
 npm install
 npm run build
 ```
 
-### Configuration
+## Setup
 
-1. Create `.env` file:
+**1. Create `.env`**
+
 ```bash
 cp .env.example .env
+# Add your Anthropic API key
 ```
 
-2. Add your Anthropic API key:
-```
-ANTHROPIC_API_KEY=sk-ant-...
-```
+**2. Add Twitter account**
 
-3. Add a Twitter account:
 ```bash
 npm run setup -- add
 ```
 
-You'll need your Twitter cookies. In Chrome DevTools → Application → Cookies → x.com, copy `auth_token` and `ct0`.
+Get your cookies from Chrome DevTools → Application → Cookies → x.com:
+- `auth_token`
+- `ct0`
 
-4. Configure Obsidian vault:
+**3. Configure Obsidian vault**
+
 ```bash
-node dist/obsidian.js config --vault ~/path/to/your/vault
+node dist/obsidian.js config --vault ~/path/to/vault
 ```
 
-### Running
+## Usage
 
-**Start the daemon** (polls every 5 minutes):
+**Start the daemon** (polls every 5 minutes, auto-exports to Obsidian):
+
 ```bash
 npm start
 ```
 
-**Or with PM2** (recommended for always-on):
+**With PM2** (recommended):
+
 ```bash
 pm2 start ecosystem.config.cjs
 pm2 save
 ```
 
-**One-time processing**:
+**One-time sync**:
+
 ```bash
 npm run process
 ```
 
 **Backfill historical bookmarks**:
+
 ```bash
 node dist/backfill.js --count 50 --max-cycles 100
 ```
@@ -104,69 +102,36 @@ node dist/backfill.js --count 50 --max-cycles 100
 | `npm run process` | One-time processing pass |
 | `npm run backfill` | Backfill historical bookmarks |
 | `npm run status` | Show system status |
-| `npm run obsidian` | Obsidian export CLI |
 | `npm run setup -- add` | Add Twitter account |
-| `npm run setup -- list` | List accounts |
+| `npm run setup -- list` | List configured accounts |
 
-### Obsidian Commands
+### Obsidian CLI
 
 ```bash
-# Sync new bookmarks to Obsidian
-node dist/obsidian.js sync
-
-# Interactive review of pending items
-node dist/obsidian.js review
-
-# Show export statistics
-node dist/obsidian.js stats
-
-# Regenerate Dataview index
-node dist/obsidian.js index
+node dist/obsidian.js sync      # Export new bookmarks
+node dist/obsidian.js review    # Interactive review
+node dist/obsidian.js stats     # Export statistics
+node dist/obsidian.js index     # Regenerate Dataview index
 ```
-
-## Project Structure
-
-```
-├── src/
-│   ├── index.ts              # Main polling service
-│   ├── processor.ts          # Processing pipeline
-│   ├── categorizer.ts        # AI categorization
-│   ├── content-extractor.ts  # Article/transcript extraction
-│   ├── context-fetcher.ts    # Thread context fetching
-│   ├── obsidian-exporter.ts  # Markdown export
-│   ├── narrative-storage.ts  # Narrative/topic tracking
-│   └── ...
-├── data/                     # Runtime data (gitignored)
-│   ├── processed/            # Categorized bookmarks
-│   ├── state/                # Polling state
-│   └── narratives/           # Narrative index
-├── ecosystem.config.cjs      # PM2 configuration
-└── obsidian.config.json      # Obsidian settings (gitignored)
-```
-
-## Obsidian Output
-
-Each bookmark becomes a markdown note with:
-
-- **Frontmatter** - `id`, `author`, `category`, `tags`, `priority`, `status`, engagement metrics
-- **Summary** - AI-generated one-liner
-- **Tweet** - Original content with thread context
-- **Article** - Extracted content from links
-- **Key Value** - Why this bookmark matters
-- **Action Items** - Suggested next steps
-- **Related** - Auto-linked topics
-
-Notes are compatible with Dataview, and a generated index provides dashboard views.
 
 ## Configuration
 
-### `obsidian.config.json`
+### Environment variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `ANTHROPIC_API_KEY` | Yes | Claude API key |
+| `TWITTER_AUTH_TOKEN` | No | Default auth_token for setup |
+| `TWITTER_CT0` | No | Default ct0 for setup |
+
+### Obsidian config
+
+Created at `obsidian.config.json`:
 
 ```json
 {
   "vaultPath": "/path/to/vault",
   "bookmarksFolder": "Bookmarks",
-  "useCategoryFolders": true,
   "categoryFolders": {
     "try": "Tools",
     "review": "Read",
@@ -176,28 +141,39 @@ Notes are compatible with Dataview, and a generated index provides dashboard vie
 }
 ```
 
-### Environment Variables
+## Output
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `ANTHROPIC_API_KEY` | Yes | Claude API key |
-| `TWITTER_AUTH_TOKEN` | No | Default auth_token for setup |
-| `TWITTER_CT0` | No | Default ct0 for setup |
+Each bookmark becomes a markdown note with:
+
+- **Frontmatter** – id, author, category, tags, priority, engagement metrics
+- **Summary** – AI-generated one-liner
+- **Tweet** – Original content with thread context
+- **Article** – Extracted content from links
+- **Key Value** – Why this matters
+- **Action Items** – Suggested next steps
+
+Notes work with Dataview. A generated index provides dashboard views.
+
+## Project structure
+
+```
+src/
+├── index.ts              # Polling daemon
+├── processor.ts          # Processing pipeline
+├── categorizer.ts        # AI categorization (Claude)
+├── content-extractor.ts  # Article/transcript extraction
+├── context-fetcher.ts    # Thread context
+├── obsidian-exporter.ts  # Markdown export
+└── narrative-storage.ts  # Topic tracking
+```
 
 ## Development
 
 ```bash
-# Watch mode
-npm run dev
-
-# Run tests
-npm test
-
-# Lint
-npm run lint
-
-# Format
-npm run format
+npm run dev        # Watch mode
+npm test           # Run tests
+npm run lint       # Lint
+npm run format     # Format
 ```
 
 ## License
