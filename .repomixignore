@@ -1,0 +1,9 @@
+# Large test files (200+ lines)
+tests/narratives-cli.test.ts
+tests/narrative-storage.test.ts
+tests/processor.test.ts
+tests/narratives-critical.test.ts
+tests/categorizer.test.ts
+tests/content-extractor.enrichment.test.ts
+tests/storage.test.ts
+tests/obsidian-exporter.test.ts

@@ -1,0 +1,107 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`obsidian-exporter > generates expected output for full-featured bookmark (golden test) 1`] = `
+"---
+schema_version: 1
+id: golden-test-001
+source_url: https://x.com/user/status/golden-test-001
+source_id: golden-test-001
+author: user
+author_name: User
+account: test
+created: 2024-01-15
+processed: 2024-01-15T00:00:00Z
+captured_at: 2024-01-15T00:00:00Z
+category: review
+priority: low
+status: unread
+tags:
+  - ai
+  - automation
+  - tools
+aliases:
+  - "@user"
+  - Golden Test Summary
+  - golden-test-001
+cssclasses:
+  - bookmark
+  - category-review
+  - priority-low
+content_type: other
+content_format: tweet
+engagement:
+  likes: 100
+  retweets: 25
+  replies: 10
+---
+
+<!-- exporter:begin title -->
+# Golden Test Summary
+<!-- exporter:end title -->
+
+<!-- exporter:begin summary -->
+## Summary
+> [!summary]
+> Golden Test Summary ^summary
+<!-- exporter:end summary -->
+
+<!-- exporter:begin tweet -->
+## Tweet
+**[@user](https://x.com/user)** · [Jan 14, 2024](https://x.com/user/status/golden-test-001)
+
+This is the tweet text with a link https://example.com ^tweet
+<!-- exporter:end tweet -->
+
+<!-- exporter:begin engagement -->
+## Engagement
+| Likes | Retweets | Replies | Bookmarks | Views | Quotes |
+|------:|:--------:|--------:|---------:|------:|------:|
+| 100 | 25 | 10 | - | - | - |
+Captured: 2024-01-15T00:00:00Z
+<!-- exporter:end engagement -->
+
+<!-- exporter:begin article -->
+## Article
+> [!abstract]- Article: Test Article
+> **Source:** [example.com](https://example.com/article)
+> Article content here...
+>
+<!-- exporter:end article -->
+
+<!-- exporter:begin key-value -->
+## Why This Matters
+This is the key value explaining why this matters
+<!-- exporter:end key-value -->
+
+<!-- exporter:begin quotes -->
+## Notable Quotes
+> [!quote]
+> Notable quote one
+>
+> [!quote]
+> Notable quote two
+>
+<!-- exporter:end quotes -->
+
+<!-- exporter:begin action-items -->
+## Action Items
+- [ ] Try this tool
+- [ ] Read the documentation
+<!-- exporter:end action-items -->
+
+<!-- exporter:begin links -->
+## Links
+- https://example.com/
+- https://github.com/test/repo
+<!-- exporter:end links -->
+
+<!-- exporter:begin related -->
+## Related
+[[Ai]] · [[Automation]] · [[Tools]]
+<!-- exporter:end related -->
+
+<!-- exporter:begin footer -->
+*Processed: 2024-01-15T00:00:00Z*
+<!-- exporter:end footer -->
+"
+`;

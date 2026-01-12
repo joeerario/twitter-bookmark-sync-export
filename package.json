@@ -1,0 +1,70 @@
+{
+  "name": "twitter-bookmark-sync-export",
+  "version": "1.0.0",
+  "description": "Sync Twitter/X bookmarks with AI-powered categorization and export to Obsidian",
+  "license": "MIT",
+  "keywords": [
+    "twitter",
+    "x",
+    "bookmarks",
+    "obsidian",
+    "ai",
+    "claude",
+    "automation",
+    "knowledge-management"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "process": "node dist/process-bookmarks.js",
+    "backfill": "node dist/backfill.js",
+    "status": "node dist/status.js",
+    "obsidian": "node dist/obsidian.js",
+    "setup": "node dist/setup.js",
+    "narratives": "node dist/narratives-cli.js",
+    "narratives:backfill": "node dist/narratives-cli.js backfill",
+    "narratives:summary": "node dist/narratives-cli.js summary",
+    "narratives:rebuild-index": "node dist/narratives-cli.js rebuild-index",
+    "narratives:list": "node dist/narratives-cli.js list",
+    "narratives:review": "node dist/narratives-cli.js review",
+    "narratives:refresh": "node dist/narratives-cli.js refresh",
+    "narratives:export-obsidian": "node dist/narratives-cli.js export-obsidian",
+    "narratives:heatmap": "node dist/narratives-cli.js heatmap",
+    "narratives:narrative-heatmap": "node dist/narratives-cli.js narrative-heatmap",
+    "test": "vitest run",
+    "test:unit": "vitest run --exclude='**/*.integration.test.ts'",
+    "test:integration": "vitest run --include='**/*.integration.test.ts'",
+    "test:watch": "vitest watch",
+    "lint": "biome check src tests vitest.config.ts biome.json package.json",
+    "lint:fix": "biome check --write src tests vitest.config.ts biome.json package.json",
+    "format": "biome format --write src tests vitest.config.ts biome.json package.json"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.71.2",
+    "@steipete/bird": "^0.6.0",
+    "cheerio": "^1.0.0",
+    "dotenv": "^17.2.3",
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
+    "unified": "^11.0.0",
+    "unist-util-visit": "^5.0.0",
+    "uuid": "^13.0.0",
+    "yaml": "^2.4.5",
+    "youtube-transcript": "^1.2.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.0",
+    "@types/node": "^22.0.0",
+    "@types/uuid": "^10.0.0",
+    "@vitest/coverage-v8": "^2.1.9",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}

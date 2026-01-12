@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+bird/
+
+# Environment (contains secrets)
+.env
+.env.*
+
+# Data files (user-specific)
+data/
+accounts.json
+obsidian.config.json
+
+# Build output (users should build from source)
+dist/
+
+# Logs
+logs/
+*.log
+
+# Generated files
+repomix-output.xml
+
+# Temporary/planning files
+ZZZ*.md
+
+# Editor and IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Claude Code local settings (may contain credentials)
+.claude/settings.local.json
+
+# Test vault (user-specific)
+test-vault/
+
+# Coverage reports
+coverage/
