@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
-    "@steipete/bird": "^0.6.0",
+    "@steipete/bird": "^0.7.0",
     "cheerio": "^1.0.0",
     "dotenv": "^17.2.3",
     "remark-parse": "^11.0.0",

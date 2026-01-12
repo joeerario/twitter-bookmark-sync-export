@@ -8,7 +8,6 @@
 import { spawn, type SpawnOptionsWithoutStdio } from 'child_process';
 import { existsSync } from 'fs';
 import { resolve, join } from 'path';
-import { extractArticleText } from '@steipete/bird/dist/lib/twitter-client-utils.js';
 import type {
   BirdCredentials,
   BirdOptions,
@@ -47,6 +46,11 @@ interface BirdTweetData {
   quotedTweet?: BirdTweetData;
   media?: BirdTweetMedia[];
   entities?: TwitterEntities;
+  /** Article metadata from Bird v0.7+ (title and preview) */
+  article?: {
+    title: string;
+    previewText?: string;
+  };
   _raw?: unknown;
 }
 
@@ -100,87 +104,30 @@ function extractUrlEntities(raw?: unknown): TwitterEntities | undefined {
   return normalized.length > 0 ? { urls: normalized } : undefined;
 }
 
-function firstText(...values: Array<string | null | undefined>): string | undefined {
-  for (const value of values) {
-    if (typeof value === 'string' && value.trim().length > 0) {
-      return value;
-    }
-  }
-  return undefined;
-}
+/**
+ * Extract article from Bird's public output.
+ * Bird v0.7+ processes Draft.js content internally - when article metadata exists,
+ * tweet.text already contains the full rendered article content.
+ */
+function extractArticle(tweet: BirdTweetData): TwitterArticle | undefined {
+  if (!tweet.article) return undefined;
 
-function collectArticleText(article: Record<string, unknown>): string | undefined {
-  const content = article.content as { items?: Array<{ text?: string; content?: { text?: string } }> } | undefined;
-  const sections = article.sections as { items?: Array<{ text?: string; content?: { text?: string } }> }[] | undefined;
-  const parts: string[] = [];
+  const title = tweet.article.title;
+  let text = tweet.text;
 
-  if (Array.isArray(content?.items)) {
-    for (const item of content.items) {
-      const text = firstText(item.text, item.content?.text);
-      if (text) parts.push(text);
-    }
+  // Bird's rendered text includes the title as a heading - strip it to avoid
+  // duplication when downstream code displays title + content separately
+  if (text.startsWith(title)) {
+    text = text.slice(title.length).replace(/^\n+/, '');
   }
 
-  if (Array.isArray(sections)) {
-    for (const section of sections) {
-      for (const item of section.items ?? []) {
-        const text = firstText(item.text, item.content?.text);
-        if (text) parts.push(text);
-      }
-    }
-  }
-
-  return parts.length > 0 ? parts.join('\n\n') : undefined;
-}
-
-function asRecord(value: unknown): Record<string, unknown> | undefined {
-  return value && typeof value === 'object' ? (value as Record<string, unknown>) : undefined;
-}
-
-function getString(record: Record<string, unknown> | undefined, key: string): string | undefined {
-  const value = record?.[key];
-  return typeof value === 'string' ? value : undefined;
-}
-
-function extractArticleFromRaw(raw?: unknown): TwitterArticle | undefined {
-  const rawRecord = asRecord(raw);
-  const article = asRecord(rawRecord?.article);
-  if (!article) return undefined;
-
-  const articleResults = asRecord(article.article_results);
-  const articleResult = asRecord(articleResults?.result) ?? article;
-
-  const title = firstText(getString(articleResult, 'title'), getString(article, 'title'));
-  const extracted = extractArticleText(rawRecord as object);
-  const body = firstText(
-    extracted,
-    getString(articleResult, 'plain_text'),
-    getString(articleResult, 'text'),
-    getString(asRecord(articleResult.body), 'text'),
-    getString(asRecord(articleResult.content), 'text'),
-    getString(asRecord(articleResult.richtext), 'text'),
-    getString(asRecord(articleResult.rich_text), 'text'),
-    getString(article, 'plain_text'),
-    getString(article, 'text'),
-    getString(asRecord(article.body), 'text'),
-    getString(asRecord(article.content), 'text'),
-    collectArticleText(articleResult),
-    collectArticleText(article)
-  );
-
-  if (!title && !body) return undefined;
-
-  if (title && body && !body.startsWith(title)) {
-    return { title, text: `${title}\n\n${body}` };
-  }
-
-  return { title, text: body ?? title };
+  return { title, text };
 }
 
 export function normalizeBirdBookmark(tweet: BirdTweetData, account?: string): RawBirdBookmark {
   const authorId = tweet.authorId || tweet.author.username;
   const entities = tweet.entities ?? extractUrlEntities(tweet._raw);
-  const article = extractArticleFromRaw(tweet._raw);
+  const article = extractArticle(tweet);
 
   return {
 

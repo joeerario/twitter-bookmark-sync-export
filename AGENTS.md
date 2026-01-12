@@ -142,4 +142,4 @@
 - Keep code consistent with existing patterns (see `src/utils/` for canonical helpers).
 - If adding new scripts, update `package.json` and this file accordingly.
 - Do not add new dependencies without clear need.
-- `@steipete/bird` is patched in `node_modules` for PR #36 (rich article content). Update to v0.7+ once released and remove the local patch.
+- `@steipete/bird` v0.7+ provides native Draft.js article content support.

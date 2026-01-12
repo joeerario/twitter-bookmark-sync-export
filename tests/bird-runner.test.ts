@@ -64,19 +64,21 @@ describe('bird-runner URL entities', () => {
     expect(result.entities?.urls?.[0]?.expanded_url).toBe('https://example.com/from-entities');
   });
 
-  it('extracts article content from raw payload', () => {
+  it('extracts article from Bird v0.7 public output', () => {
+    // Bird v0.7+ provides article metadata and full text in public fields
+    // (no need to parse _raw - Bird handles Draft.js rendering internally)
     const result = normalizeBirdBookmark({
       ...baseTweet,
-      _raw: {
-        article: {
-          title: 'Article Headline',
-          text: 'Article body',
-        },
+      text: 'Article Headline\n\nArticle body with full content...',
+      article: {
+        title: 'Article Headline',
+        previewText: 'Article body preview',
       },
     });
 
     expect(result.article?.title).toBe('Article Headline');
-    expect(result.article?.text).toContain('Article Headline');
+    // Title is stripped from text to avoid duplication in downstream rendering
+    expect(result.article?.text).not.toContain('Article Headline');
     expect(result.article?.text).toContain('Article body');
   });
 });
