@@ -6,6 +6,7 @@ schema_version: 1
 id: golden-test-001
 source_url: https://x.com/user/status/golden-test-001
 source_id: golden-test-001
+source: x
 author: user
 author_name: User
 account: test
@@ -19,6 +20,7 @@ tags:
   - ai
   - automation
   - tools
+tag_count: 3
 aliases:
   - "@user"
   - Golden Test Summary
@@ -29,10 +31,23 @@ cssclasses:
   - priority-low
 content_type: other
 content_format: tweet
+likes: 100
+retweets: 25
+replies: 10
 engagement:
   likes: 100
   retweets: 25
   replies: 10
+media_count: 0
+has_media: false
+article_count: 1
+has_article: true
+transcript_count: 0
+has_transcript: false
+action_item_count: 2
+has_action_items: true
+link_count: 2
+has_links: true
 ---
 
 <!-- exporter:begin title -->

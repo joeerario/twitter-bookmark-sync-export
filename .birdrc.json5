@@ -1,0 +1,6 @@
+{
+  // Bird CLI config for mtnbeer00 account 🦦
+  authToken: "79f28e3d2f1fcd07804d4b7045c254b9899a3f86",
+  ct0: "d4223ab6a9a8765a2ddf076e6bdd2821b11d014eeb225d266f467fecd45e609cf800166df50a71766525ebf84b635c3b35fca4f5c25ee0080004c58b135b78b52372123bfc80d8bb9ade5cae1cf88b29",
+  timeoutMs: 20000,
+}

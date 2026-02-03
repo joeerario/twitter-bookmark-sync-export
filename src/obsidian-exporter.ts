@@ -81,6 +81,7 @@ const FRONTMATTER_KEY_ORDER = [
   'id',
   'source_url',
   'source_id',
+  'source',
   'author',
   'author_name',
   'account',
@@ -91,12 +92,28 @@ const FRONTMATTER_KEY_ORDER = [
   'priority',
   'status',
   'tags',
+  'tag_count',
   'aliases',
   'cssclasses',
   'content_type',
   'content_format',
   'thread_count',
+  'conversation_id',
+  'thread_root_id',
+  'likes',
+  'retweets',
+  'replies',
   'engagement',
+  'media_count',
+  'has_media',
+  'article_count',
+  'has_article',
+  'transcript_count',
+  'has_transcript',
+  'action_item_count',
+  'has_action_items',
+  'link_count',
+  'has_links',
 ];
 const OWNED_FRONTMATTER_KEYS = new Set(FRONTMATTER_KEY_ORDER);
 export const OWNED_SECTION_KEYS = [
@@ -590,6 +607,13 @@ function buildFrontmatter(
   const title = bookmark.summary || bookmark.text?.slice(0, 80) || 'Untitled';
   const sourceUrl = `https://x.com/${bookmark.author?.username || 'i'}/status/${bookmark.id}`;
   const tagsResult = normalizeTags(bookmark.tags, config.tagPolicy);
+  const tagCount = tagsResult.tags.length;
+  const mediaCount = bookmark.media?.length ?? 0;
+  const articleCount = bookmark.articles?.length ?? 0;
+  const transcriptCount = bookmark.transcripts?.length ?? 0;
+  const actionItemCount = bookmark.actionItems?.length ?? 0;
+  const linkCount = bookmark.urls?.length ?? 0;
+  const threadRootId = bookmark.threadContext?.authorThread?.[0]?.id ?? null;
 
   const existingStatus = typeof existing?.status === 'string' ? existing.status : null;
   const aliases = normalizeList([title, `@${bookmark.author?.username || 'unknown'}`, bookmark.id]);
@@ -604,6 +628,7 @@ function buildFrontmatter(
     id: bookmark.id,
     source_url: sourceUrl,
     source_id: bookmark.id,
+    source: 'x',
     author: bookmark.author?.username || 'unknown',
     author_name: bookmark.author?.name || '',
     account: bookmark.account || 'unknown',
@@ -614,16 +639,32 @@ function buildFrontmatter(
     priority: bookmark.priority || 'medium',
     status: existingStatus || 'unread',
     tags: tagsResult.tags,
+    tag_count: tagCount,
     aliases,
     cssclasses,
     content_type: bookmark.contentType || 'other',
     content_format: deriveContentFormat(bookmark),
     thread_count: bookmark.threadContext?.authorThread?.length ?? null,
+    conversation_id: bookmark.conversationId ?? null,
+    thread_root_id: threadRootId,
+    likes: bookmark.likeCount ?? 0,
+    retweets: bookmark.retweetCount ?? 0,
+    replies: bookmark.replyCount ?? 0,
     engagement: {
       likes: bookmark.likeCount ?? 0,
       retweets: bookmark.retweetCount ?? 0,
       replies: bookmark.replyCount ?? 0,
     },
+    media_count: mediaCount,
+    has_media: mediaCount > 0,
+    article_count: articleCount,
+    has_article: articleCount > 0,
+    transcript_count: transcriptCount,
+    has_transcript: transcriptCount > 0,
+    action_item_count: actionItemCount,
+    has_action_items: actionItemCount > 0,
+    link_count: linkCount,
+    has_links: linkCount > 0,
   };
 
   const preserved: Record<string, unknown> = {};
